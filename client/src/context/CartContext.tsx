@@ -1,17 +1,22 @@
-import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { createContext, useContext, useState, type ReactNode, useEffect } from 'react';
 
 interface CartItem {
+    id?: string; // Unique ID for cart entry
     serviceId: string;
     name: string;
     indicativePrice: number;
-    quantity: number; // weight in kg
+    quantity: number;
+    unit: string;
+    fabricType?: string; // Cotton, Polyester etc. specific type
+    colorDetails?: string;
+    urgency?: string;
     notes: string;
 }
 
 interface CartContextType {
     items: CartItem[];
     addToCart: (item: CartItem) => void;
-    removeFromCart: (serviceId: string) => void;
+    removeFromCart: (itemId: string) => void;
     clearCart: () => void;
     cartTotalConfig: number;
 }
@@ -32,19 +37,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const addToCart = (item: CartItem) => {
-        // Check if exists
-        const existing = items.find(i => i.serviceId === item.serviceId);
-        let newItems;
-        if (existing) {
-            newItems = items.map(i => i.serviceId === item.serviceId ? { ...i, quantity: i.quantity + item.quantity } : i);
-        } else {
-            newItems = [...items, item];
-        }
+        // Generate a random ID for the cart item to allow duplicates of same service with different specs
+        const cartItem = { ...item, id: Math.random().toString(36).substr(2, 9) };
+        const newItems = [...items, cartItem];
         saveCart(newItems);
     };
 
-    const removeFromCart = (serviceId: string) => {
-        const newItems = items.filter(i => i.serviceId !== serviceId);
+    const removeFromCart = (itemId: string) => {
+        const newItems = items.filter(i => i.id !== itemId);
         saveCart(newItems);
     };
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useAuth } from '../../../context/AuthContext';
+
 import { useSocket } from '../../../hooks/useSocket';
 
 interface Quote {
@@ -13,7 +13,6 @@ interface Quote {
 
 export const QuoteManager = () => {
     const [quotes, setQuotes] = useState<Quote[]>([]);
-    const { user } = useAuth();
     const socket = useSocket();
     const [responseForm, setResponseForm] = useState<{ id: string, price: number, notes: string } | null>(null);
 
@@ -21,7 +20,7 @@ export const QuoteManager = () => {
         const fetchQuotes = async () => {
             // Admin view
             try {
-                const res = await axios.get('http://localhost:5000/api/quotes?role=admin');
+                const res = await axios.get('http://localhost:5000/api/quotes');
                 setQuotes(res.data);
             } catch (err) { console.error(err); }
         };

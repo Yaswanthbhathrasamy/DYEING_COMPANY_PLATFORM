@@ -1,3 +1,4 @@
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
@@ -12,7 +13,7 @@ import { MyQuotes } from './pages/dashboard/MyQuotes';
 import { MyOrders } from './pages/dashboard/MyOrders';
 
 // Protected Route Component
-const ProtectedRoute = ({ children, requiredRole }: { children: JSX.Element, requiredRole?: 'admin' | 'buyer' }) => {
+const ProtectedRoute = ({ children, requiredRole }: { children: React.ReactElement, requiredRole?: 'admin' | 'buyer' }) => {
   const { isAuthenticated, isLoading, user } = useAuth();
 
   if (isLoading) return <div>Loading...</div>;

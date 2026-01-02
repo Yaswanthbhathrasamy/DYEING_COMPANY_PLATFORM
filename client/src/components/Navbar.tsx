@@ -1,13 +1,10 @@
-import { ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Menu, X, User, ArrowRight } from 'lucide-react';
-import { useState } from 'react';
+import { ArrowRight } from 'lucide-react';
 
 export const Navbar = () => {
-    const { isAuthenticated, user, logout } = useAuth();
+    const { isAuthenticated, logout } = useAuth();
     const navigate = useNavigate();
-    const [isOpen, setIsOpen] = useState(false);
 
     const handleLogout = () => {
         logout();
@@ -20,7 +17,7 @@ export const Navbar = () => {
                 <div className="flex justify-between h-16">
                     <div className="flex items-center">
                         <Link to="/" className="flex-shrink-0 flex items-center">
-                            <span className="text-2xl font-bold text-primary-600">DYE<span className="text-gray-900">MASTER</span></span>
+                            <span className="text-xl font-bold text-primary-600">Goodwill<span className="text-gray-900"> Process Dyeworks</span></span>
                         </Link>
                     </div>
 

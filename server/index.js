@@ -16,8 +16,14 @@ app.use(cors({
 app.use(express.json());
 
 // Database Connection
+const seedAdmin = require('./seedAdmin');
+
+// Database Connection
 mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log('MongoDB Connected'))
+    .then(() => {
+        console.log('MongoDB Connected');
+        seedAdmin();
+    })
     .catch(err => console.log('MongoDB Error:', err));
 
 // Socket.io Setup
@@ -62,6 +68,7 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/services', require('./routes/services'));
 app.use('/api/quotes', require('./routes/quotes'));
 app.use('/api/orders', require('./routes/orders'));
+app.use('/api/stats', require('./routes/stats'));
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {

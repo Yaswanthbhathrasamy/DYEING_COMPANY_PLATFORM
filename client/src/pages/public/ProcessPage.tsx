@@ -1,4 +1,4 @@
-import { ArrowDown, Beaker, CheckCircle, Droplet, Sun, Wind } from 'lucide-react';
+import { Beaker, CheckCircle, Droplet, Sun, Wind } from 'lucide-react';
 
 const steps = [
     {

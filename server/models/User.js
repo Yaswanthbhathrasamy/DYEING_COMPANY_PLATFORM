@@ -6,7 +6,8 @@ const UserSchema = new mongoose.Schema({
   password: { type: String, required: true },
   role: { type: String, enum: ['admin', 'buyer'], default: 'buyer' },
   companyName: { type: String },
-  gstNumber: { type: String }, // GST format validation can be added
+  gstNumber: { type: String }, // GST format: 2 numbers, 5 letters, 4 numbers, 1 letter, 1 number, 1 letter, 1 number/letter
+  billingAddress: { type: String },
   phone: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
 });

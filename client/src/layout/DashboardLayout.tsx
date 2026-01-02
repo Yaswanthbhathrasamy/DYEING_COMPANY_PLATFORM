@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -12,12 +12,16 @@ import {
 } from 'lucide-react';
 import clsx from 'clsx';
 
+import { Chatbot } from '../components/Chatbot';
+
 export const DashboardLayout = ({ children }: { children: ReactNode }) => {
+    // ... hooks ...
     const { user, logout } = useAuth();
     const location = useLocation();
 
     const isAdmin = user?.role === 'admin';
 
+    // ... NavItem ...
     const NavItem = ({ to, icon: Icon, label }: { to: string, icon: any, label: string }) => (
         <Link
             to={to}
@@ -35,7 +39,7 @@ export const DashboardLayout = ({ children }: { children: ReactNode }) => {
 
     return (
         <div className="flex h-screen bg-gray-50">
-            {/* Sidebar */}
+            {/* Sidebar ... */}
             <aside className="w-64 bg-white border-r border-gray-200 hidden md:flex flex-col">
                 <div className="h-16 flex items-center px-6 border-b border-gray-100">
                     <span className="text-xl font-bold text-primary-600">DYE<span className="text-gray-900">MASTER</span></span>
@@ -85,10 +89,11 @@ export const DashboardLayout = ({ children }: { children: ReactNode }) => {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 overflow-auto">
+            <main className="flex-1 overflow-auto bg-gray-50 relative">
                 <div className="py-6 px-4 sm:px-6 lg:px-8">
                     {children}
                 </div>
+                <Chatbot />
             </main>
         </div>
     );

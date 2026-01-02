@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Order = require('../models/Order');
+const auth = require('../middlewares/auth');
 
 // Create Order (Admin Only - from Accepted Quote)
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
     try {
         const { quoteId, buyerId } = req.body;
 
@@ -27,11 +28,10 @@ router.post('/', async (req, res) => {
 });
 
 // Get Orders
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
     try {
-        const { userId, role } = req.query;
         let orders;
-        if (role === 'admin') {
+        if (req.user.role === 'admin') {
             orders = await Order.find()
                 .populate('buyer', 'name companyName')
                 .populate({
@@ -39,7 +39,7 @@ router.get('/', async (req, res) => {
                     populate: { path: 'items.service' }
                 });
         } else {
-            orders = await Order.find({ buyer: userId })
+            orders = await Order.find({ buyer: req.user.id })
                 .populate({
                     path: 'quote',
                     populate: { path: 'items.service' }
@@ -53,8 +53,11 @@ router.get('/', async (req, res) => {
 });
 
 // Update Order Status (Admin)
-router.put('/:id/status', async (req, res) => {
+router.put('/:id/status', auth, async (req, res) => {
     try {
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'Not authorized' });
+        }
         const { status, note } = req.body;
         const order = await Order.findById(req.params.id);
 

@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useAuth } from '../../../context/AuthContext';
-import { useSocket } from '../../../hooks/useSocket';
+
 
 interface Order {
     _id: string;
@@ -13,8 +12,7 @@ interface Order {
 
 export const OrderOps = () => {
     const [orders, setOrders] = useState<Order[]>([]);
-    const { user } = useAuth();
-    const socket = useSocket();
+
 
     useEffect(() => {
         const fetchOrders = async () => {

@@ -8,15 +8,19 @@ export default {
         extend: {
             colors: {
                 primary: {
-                    50: '#f0fdf4',
-                    100: '#dcfce7',
-                    500: '#22c55e',
-                    600: '#16a34a',
-                    700: '#15803d',
-                    900: '#14532d',
+                    50: '#eef6fb',
+                    100: '#d5eaf5',
+                    200: '#b0d9ee',
+                    300: '#7dbfe2',
+                    400: '#469fd1',
+                    500: '#2582b8',
+                    600: '#196796',
+                    700: '#0B3C5D', // CORE DEEP BLUE
+                    800: '#114467',
+                    900: '#123953',
                 },
-                secondary: '#0ea5e9', // Sky blue
-                accent: '#f59e0b', // Amber
+                secondary: '#7A1F2B', // MAROON
+                accent: '#F2F2F2', // LIGHT GREY
             },
             fontFamily: {
                 sans: ['Inter', 'sans-serif'],

@@ -15,6 +15,15 @@ const OrderSchema = new mongoose.Schema({
             note: String
         }
     ],
+    totalAmount: { type: Number },
+    billingDetails: {
+        companyName: String,
+        gstNumber: String,
+        billingAddress: String,
+        buyerName: String,
+        buyerEmail: String,
+        buyerPhone: String
+    },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
 });

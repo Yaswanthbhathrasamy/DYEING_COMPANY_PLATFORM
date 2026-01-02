@@ -1,34 +1,51 @@
-import { ArrowRight, Droplets, Palette, Layers, Sparkles } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import { Droplets, Palette, Layers, Sparkles, Box } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const services = [
-    {
-        title: 'Cotton Dyeing',
-        description: 'Premium reactive and vat dyeing for cellulosic fibers with excellent color fastness.',
-        icon: Droplets,
-        color: 'bg-blue-50 text-blue-600'
-    },
-    {
-        title: 'Polyester Dyeing',
-        description: 'High-temperature high-pressure (HTHP) dyeing ensuring deep penetration and vibrant shades.',
-        icon: Palette,
-        color: 'bg-purple-50 text-purple-600'
-    },
-    {
-        title: 'Bio-Washing',
-        description: 'Enzyme treatment for removing fuzz and pilling, providing a softer, smoother fabric hand.',
-        icon: Sparkles,
-        color: 'bg-green-50 text-green-600'
-    },
-    {
-        title: 'Fabric Printing',
-        description: 'Rotary and digital printing services for intricate designs and patterns.',
-        icon: Layers,
-        color: 'bg-orange-50 text-orange-600'
-    }
-];
+interface Service {
+    _id: string;
+    name: string;
+    description: string;
+    category: string;
+    indicativePrice: number;
+    imageUrl: string;
+}
 
 export const ServicesPage = () => {
+    const [services, setServices] = useState<Service[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchServices = async () => {
+            try {
+                const res = await axios.get('http://localhost:5000/api/services?active=true');
+                setServices(res.data);
+            } catch (err) {
+                console.error(err);
+                // Fallback for Demo / Offline Mode
+                setServices([
+                    { _id: '1', name: 'Cotton Reactive Dyeing (Demo)', description: 'Premium reactive dyeing for cotton.', category: 'Cotton', indicativePrice: 180, imageUrl: '', unit: 'kg', materialType: 'Fabric', isActive: true },
+                    { _id: '2', name: 'Polyester HTHP Dyeing (Demo)', description: 'High temp dyeing for polyester.', category: 'Polyester', indicativePrice: 140, imageUrl: '', unit: 'kg', materialType: 'Yarn', isActive: true },
+                    { _id: '3', name: 'Bio-Washing (Demo)', description: 'Enzyme treatment for softness.', category: 'Washing', indicativePrice: 40, imageUrl: '', unit: 'kg', materialType: 'Fabric', isActive: true }
+                ]);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchServices();
+    }, []);
+
+    // Helper to get icon based on category (optional visual flair)
+    const getIcon = (category: string) => {
+        const cat = category.toLowerCase();
+        if (cat.includes('cotton')) return Droplets;
+        if (cat.includes('polyester')) return Palette;
+        if (cat.includes('wash')) return Sparkles;
+        if (cat.includes('print')) return Layers;
+        return Box;
+    };
+
     return (
         <div className="bg-white">
             {/* Hero */}
@@ -49,27 +66,37 @@ export const ServicesPage = () => {
             {/* List */}
             <div className="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8">
                 <div className="mx-auto max-w-2xl lg:max-w-none">
-                    <div className="grid grid-cols-1 gap-y-16 lg:grid-cols-2 lg:gap-x-16">
-                        {services.map((service) => {
-                            const Icon = service.icon;
-                            return (
-                                <div key={service.title} className="flex flex-col sm:flex-row gap-6">
-                                    <div className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-lg ${service.color}`}>
-                                        <Icon className="h-8 w-8" />
-                                    </div>
-                                    <div className="flex-auto">
-                                        <h3 className="text-xl font-bold tracking-tight text-gray-900">{service.title}</h3>
-                                        <p className="mt-3 text-base leading-7 text-gray-600">{service.description}</p>
-                                        <div className="mt-4">
-                                            <Link to="/register" className="text-sm font-semibold leading-6 text-primary-600 hover:text-primary-500">
-                                                Get a Quote <span aria-hidden="true">→</span>
-                                            </Link>
+                    {loading ? (
+                        <div className="text-center">Loading Services...</div>
+                    ) : (
+                        <div className="grid grid-cols-1 gap-y-16 lg:grid-cols-2 lg:gap-x-16">
+                            {services.map((service) => {
+                                const Icon = getIcon(service.category);
+                                return (
+                                    <div key={service._id} className="flex flex-col sm:flex-row gap-6">
+                                        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-primary-50 text-primary-600">
+                                            <Icon className="h-8 w-8" />
+                                        </div>
+                                        <div className="flex-auto">
+                                            <h3 className="text-xl font-bold tracking-tight text-gray-900">{service.name}</h3>
+                                            <p className="mt-3 text-base leading-7 text-gray-600">{service.description}</p>
+                                            <div className="mt-2 text-sm font-semibold text-gray-500">
+                                                Category: {service.category}
+                                            </div>
+                                            <div className="mt-4">
+                                                <Link to="/register" className="text-sm font-semibold leading-6 text-primary-600 hover:text-primary-500">
+                                                    Get a Quote <span aria-hidden="true">→</span>
+                                                </Link>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            );
-                        })}
-                    </div>
+                                );
+                            })}
+                            {services.length === 0 && (
+                                <div className="col-span-2 text-center text-gray-500">No active services at the moment.</div>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
 

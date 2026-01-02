@@ -18,6 +18,10 @@ interface Order {
     };
     status: string;
     timeline: TimelineEvent[];
+    totalAmount?: number;
+    billingDetails?: {
+        companyName?: string;
+    };
 }
 
 const statusSteps = [
@@ -67,9 +71,16 @@ export const MyOrders = () => {
                     <div className="flex justify-between items-center mb-6">
                         <div>
                             <h3 className="text-lg font-bold text-gray-900">Order #{order._id.slice(-6)}</h3>
-                            <p className="text-sm text-gray-500">{order.quote?.items[0]?.service?.name} + {order.quote?.items.length - 1} more</p>
+                            <p className="text-sm text-gray-500">{order.quote?.items[0]?.service?.name}</p>
                         </div>
                         <div className="text-right">
+                            {/* @ts-ignore */}
+                            {order.totalAmount > 0 && (
+                                <p className="text-lg font-bold text-green-600 mb-1">
+                                    {/* @ts-ignore */}
+                                    ₹{order.totalAmount.toLocaleString()}
+                                </p>
+                            )}
                             <span className="inline-block px-3 py-1 rounded-full text-sm font-semibold bg-gray-100 text-gray-800 capitalize">
                                 {order.status.replace('_', ' ')}
                             </span>
@@ -77,7 +88,7 @@ export const MyOrders = () => {
                     </div>
 
                     {/* Progress Bar */}
-                    <div className="relative">
+                    <div className="relative mb-6">
                         <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-200">
                             {/* Calculate rough percent based on index */}
                             <div
@@ -102,6 +113,19 @@ export const MyOrders = () => {
                                 );
                             })}
                         </div>
+                    </div>
+
+                    {/* Invoice & Details Link */}
+                    <div className="flex justify-between items-center pt-4 border-t border-gray-100">
+                        <div className="text-sm text-gray-500">
+                            {/* @ts-ignore */}
+                            {order.billingDetails?.companyName && (
+                                <span>Billed to: <span className="font-medium text-gray-900">{order.billingDetails.companyName}</span></span>
+                            )}
+                        </div>
+                        <button className="text-primary-600 hover:text-primary-800 text-sm font-medium flex items-center">
+                            View Invoice & Details
+                        </button>
                     </div>
                 </div>
             ))}

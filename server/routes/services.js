@@ -1,28 +1,39 @@
 const express = require('express');
 const router = express.Router();
 const Service = require('../models/Service');
-// Can add admin middleware later for CUD operations
+const auth = require('../middlewares/auth');
 
-// Get All Services (Public)
+// Get All Services (Public) - Support ?active=true
 router.get('/', async (req, res) => {
     try {
-        const services = await Service.find();
+        const { active } = req.query;
+        let query = {};
+        if (active === 'true') {
+            query.isActive = true;
+        }
+        const services = await Service.find(query).sort({ createdAt: -1 });
         res.json(services);
     } catch (err) {
         res.status(500).send('Server Error');
     }
 });
 
-// Create Service (Admin Only - simplified checks for now)
-router.post('/', async (req, res) => {
+// Create Service (Admin Only)
+router.post('/', auth, async (req, res) => {
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ message: 'Access denied' });
+    }
     try {
-        const { name, description, category, indicativePrice, imageUrl } = req.body;
+        const { name, description, category, indicativePrice, imageUrl, isActive, materialType, unit } = req.body;
         const newService = new Service({
             name,
             description,
             category,
             indicativePrice,
-            imageUrl
+            imageUrl,
+            isActive: isActive !== undefined ? isActive : true,
+            materialType: materialType || 'Fabric',
+            unit: unit || 'kg'
         });
         const service = await newService.save();
         res.json(service);
@@ -32,8 +43,11 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Update Service
-router.put('/:id', async (req, res) => {
+// Update Service (Admin Only)
+router.put('/:id', auth, async (req, res) => {
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ message: 'Access denied' });
+    }
     try {
         const service = await Service.findByIdAndUpdate(req.params.id, req.body, { new: true });
         res.json(service);
@@ -42,8 +56,11 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// Delete Service
-router.delete('/:id', async (req, res) => {
+// Delete Service (Admin Only)
+router.delete('/:id', auth, async (req, res) => {
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ message: 'Access denied' });
+    }
     try {
         await Service.findByIdAndDelete(req.params.id);
         res.json({ message: 'Service removed' });

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useAuth } from '../../../context/AuthContext';
+
 import { Plus, Trash2, Edit2, X } from 'lucide-react';
+
 
 interface Service {
     _id?: string;
@@ -10,13 +11,15 @@ interface Service {
     category: string;
     indicativePrice: number;
     imageUrl: string;
+    isActive: boolean;
+    materialType: 'Fabric' | 'Yarn' | 'Both';
+    unit: 'kg' | 'meter';
 }
 
 export const ServiceManager = () => {
     const [services, setServices] = useState<Service[]>([]);
     const [isEditing, setIsEditing] = useState(false);
     const [currentService, setCurrentService] = useState<Service | null>(null);
-    const { user } = useAuth();
 
     const fetchServices = async () => {
         try {
@@ -53,7 +56,16 @@ export const ServiceManager = () => {
         } catch (err) { console.error(err); }
     };
 
-    const openEdit = (service: Service = { name: '', description: '', category: '', indicativePrice: 0, imageUrl: '' }) => {
+    const openEdit = (service: Service = {
+        name: '',
+        description: '',
+        category: '',
+        indicativePrice: 0,
+        imageUrl: '',
+        isActive: true,
+        materialType: 'Fabric',
+        unit: 'kg'
+    }) => {
         setCurrentService(service);
         setIsEditing(true);
     };
@@ -72,12 +84,24 @@ export const ServiceManager = () => {
 
             {isEditing && currentService && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center -m-10 z-50 overflow-y-auto">
-                    <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-lg">
+                    <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-lg my-10">
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-xl font-bold">{currentService._id ? 'Edit Service' : 'New Service'}</h2>
                             <button onClick={() => setIsEditing(false)}><X className="w-6 h-6 text-gray-400" /></button>
                         </div>
                         <form onSubmit={handleSave} className="space-y-4">
+                            <div className="flex items-center space-x-2">
+                                <label className="flex items-center space-x-2 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={currentService.isActive}
+                                        onChange={e => setCurrentService({ ...currentService, isActive: e.target.checked })}
+                                        className="form-checkbox h-5 w-5 text-primary-600"
+                                    />
+                                    <span className="text-gray-900 font-medium">Service Active</span>
+                                </label>
+                            </div>
+
                             <input
                                 className="border p-2 w-full rounded"
                                 placeholder="Service Name"
@@ -92,26 +116,52 @@ export const ServiceManager = () => {
                                 onChange={e => setCurrentService({ ...currentService, description: e.target.value })}
                                 required
                             />
-                            <select
-                                className="border p-2 w-full rounded"
-                                value={currentService.category}
-                                onChange={e => setCurrentService({ ...currentService, category: e.target.value })}
-                                required
-                            >
-                                <option value="">Select Category</option>
-                                <option value="Cotton">Cotton</option>
-                                <option value="Polyester">Polyester</option>
-                                <option value="Washing">Washing</option>
-                                <option value="Printing">Printing</option>
-                            </select>
-                            <input
-                                type="number"
-                                className="border p-2 w-full rounded"
-                                placeholder="Indicative Price (₹/kg)"
-                                value={currentService.indicativePrice}
-                                onChange={e => setCurrentService({ ...currentService, indicativePrice: Number(e.target.value) })}
-                                required
-                            />
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <select
+                                    className="border p-2 w-full rounded"
+                                    value={currentService.category}
+                                    onChange={e => setCurrentService({ ...currentService, category: e.target.value })}
+                                    required
+                                >
+                                    <option value="">Category</option>
+                                    <option value="Cotton">Cotton</option>
+                                    <option value="Polyester">Polyester</option>
+                                    <option value="Washing">Washing</option>
+                                    <option value="Printing">Printing</option>
+                                </select>
+                                <select
+                                    className="border p-2 w-full rounded"
+                                    value={currentService.materialType}
+                                    onChange={e => setCurrentService({ ...currentService, materialType: e.target.value as any })}
+                                    required
+                                >
+                                    <option value="Fabric">Fabric Only</option>
+                                    <option value="Yarn">Yarn Only</option>
+                                    <option value="Both">Both</option>
+                                </select>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <input
+                                    type="number"
+                                    className="border p-2 w-full rounded"
+                                    placeholder="Base Price"
+                                    value={currentService.indicativePrice}
+                                    onChange={e => setCurrentService({ ...currentService, indicativePrice: Number(e.target.value) })}
+                                    required
+                                />
+                                <select
+                                    className="border p-2 w-full rounded"
+                                    value={currentService.unit}
+                                    onChange={e => setCurrentService({ ...currentService, unit: e.target.value as any })}
+                                    required
+                                >
+                                    <option value="kg">Per Kg</option>
+                                    <option value="meter">Per Meter</option>
+                                </select>
+                            </div>
+
                             <input
                                 className="border p-2 w-full rounded"
                                 placeholder="Image URL"
@@ -129,8 +179,15 @@ export const ServiceManager = () => {
                     {services.map(service => (
                         <li key={service._id} className="px-6 py-4 flex items-center justify-between hover:bg-gray-50">
                             <div>
-                                <h3 className="text-lg font-medium text-gray-900">{service.name}</h3>
-                                <p className="text-sm text-gray-500">{service.category} • ₹{service.indicativePrice}/kg</p>
+                                <div className="flex items-center space-x-2">
+                                    <h3 className="text-lg font-medium text-gray-900">{service.name}</h3>
+                                    <span className={`px-2 py-0.5 rounded text-xs font-semibold ${service.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                                        {service.isActive ? 'Active' : 'Inactive'}
+                                    </span>
+                                </div>
+                                <p className="text-sm text-gray-500">
+                                    {service.category} • {service.materialType} • ₹{service.indicativePrice}/{service.unit}
+                                </p>
                             </div>
                             <div className="flex space-x-2">
                                 <button onClick={() => openEdit(service)} className="text-blue-600 hover:text-blue-900 p-2 bg-blue-50 rounded-full"><Edit2 className="w-4 h-4" /></button>
