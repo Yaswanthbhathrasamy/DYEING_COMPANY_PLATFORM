@@ -27,16 +27,8 @@ export const Register = () => {
             login(res.data.token, res.data.user);
             navigate('/dashboard');
         } catch (err: any) {
-            // BYPASS FOR DEMO / DB DOWN SCENARIO
-            console.warn("Registration failed (DB likely down). Bypass enabled.");
-            // Simulate auto-login after "registration"
-            login('bypass-token-buyer', {
-                id: 'buyer-mock-id',
-                name: formData.name || 'New User',
-                role: 'buyer'
-            });
-            navigate('/dashboard');
-            return;
+            console.error(err);
+            setError(err.response?.data?.message || 'Registration failed. Please try again.');
         }
     };
 
