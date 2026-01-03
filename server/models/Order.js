@@ -2,11 +2,18 @@ const mongoose = require('mongoose');
 
 const OrderSchema = new mongoose.Schema({
     buyer: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    quote: { type: mongoose.Schema.Types.ObjectId, ref: 'Quote', required: true },
+    quote: { type: mongoose.Schema.Types.ObjectId, ref: 'Quote' }, // Made optional
+    items: [
+        {
+            service: { type: mongoose.Schema.Types.ObjectId, ref: 'Service', required: true },
+            quantity: { type: Number, required: true },
+            notes: String
+        }
+    ],
     status: {
         type: String,
-        enum: ['pending', 'dyeing', 'washing', 'drying', 'quality_check', 'dispatched', 'completed'],
-        default: 'pending'
+        enum: ['pending', 'pending_approval', 'dyeing', 'washing', 'drying', 'quality_check', 'dispatched', 'completed', 'paid', 'approved'],
+        default: 'pending' // 'pending' for quote-orders, 'pending_approval' for direct-orders
     },
     timeline: [
         {

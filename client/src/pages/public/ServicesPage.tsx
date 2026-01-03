@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Droplets, Palette, Layers, Sparkles, Box } from 'lucide-react';
+import { Droplets, Palette, Layers, Sparkles, Box, ShoppingCart } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useCart } from '../../context/CartContext';
 
 interface Service {
     _id: string;
@@ -10,6 +11,9 @@ interface Service {
     category: string;
     indicativePrice: number;
     imageUrl: string;
+    unit: string; // Ensure unit is in interface
+    materialType?: string;
+    isActive?: boolean;
 }
 
 export const ServicesPage = () => {
@@ -46,8 +50,34 @@ export const ServicesPage = () => {
         return Box;
     };
 
+    const { addToCart, cartTotalConfig } = useCart();
+
+    const handleAddToCart = (service: Service) => {
+        addToCart({
+            serviceId: service._id,
+            name: service.name,
+            indicativePrice: service.indicativePrice,
+            quantity: 100, // Default quantity, user can change in cart
+            unit: service.unit || 'kg',
+            notes: ''
+        });
+        alert('Added to cart!');
+    };
+
     return (
         <div className="bg-white">
+            {/* Cart Floating Button (Visible if items in cart) */}
+            {cartTotalConfig > 0 && (
+                <Link to="/dashboard/cart" className="fixed bottom-8 right-8 z-50 bg-primary-600 text-white p-4 rounded-full shadow-lg hover:bg-primary-700 transition-all">
+                    <div className="relative">
+                        <ShoppingCart className="h-6 w-6" />
+                        <span className="absolute -top-3 -right-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                            {cartTotalConfig}
+                        </span>
+                    </div>
+                </Link>
+            )}
+
             {/* Hero */}
             <div className="relative bg-gray-900 py-24 sm:py-32">
                 <div className="absolute inset-0 overflow-hidden">
@@ -81,10 +111,16 @@ export const ServicesPage = () => {
                                             <h3 className="text-xl font-bold tracking-tight text-gray-900">{service.name}</h3>
                                             <p className="mt-3 text-base leading-7 text-gray-600">{service.description}</p>
                                             <div className="mt-2 text-sm font-semibold text-gray-500">
-                                                Category: {service.category}
+                                                Category: {service.category} | Price: ₹{service.indicativePrice}/{service.unit || 'kg'}
                                             </div>
-                                            <div className="mt-4">
-                                                <Link to="/register" className="text-sm font-semibold leading-6 text-primary-600 hover:text-primary-500">
+                                            <div className="mt-4 flex gap-4">
+                                                <button
+                                                    onClick={() => handleAddToCart(service)}
+                                                    className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500"
+                                                >
+                                                    Add to Cart
+                                                </button>
+                                                <Link to="/register" className="text-sm font-semibold leading-6 text-primary-600 hover:text-primary-500 py-2.5">
                                                     Get a Quote <span aria-hidden="true">→</span>
                                                 </Link>
                                             </div>

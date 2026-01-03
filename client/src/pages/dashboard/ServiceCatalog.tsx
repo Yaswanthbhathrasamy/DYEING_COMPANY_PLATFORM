@@ -39,9 +39,9 @@ export const ServiceCatalog = () => {
                 console.error(err);
                 // Fallback for Demo / Offline Mode
                 setServices([
-                    { _id: '1', name: 'Cotton Reactive Dyeing (Demo)', description: 'Premium reactive dyeing for cotton.', category: 'Cotton', indicativePrice: 180, imageUrl: 'https://placehold.co/600x400/e2e8f0/1e293b?text=Cotton+Dyeing', unit: 'kg', materialType: 'Fabric', isActive: true },
-                    { _id: '2', name: 'Polyester HTHP Dyeing (Demo)', description: 'High temp dyeing for polyester.', category: 'Polyester', indicativePrice: 140, imageUrl: 'https://placehold.co/600x400/e2e8f0/1e293b?text=Polyester+Dyeing', unit: 'kg', materialType: 'Yarn', isActive: true },
-                    { _id: '3', name: 'Bio-Washing (Demo)', description: 'Enzyme treatment for softness.', category: 'Washing', indicativePrice: 40, imageUrl: 'https://placehold.co/600x400/e2e8f0/1e293b?text=Bio+Washing', unit: 'kg', materialType: 'Fabric', isActive: true }
+                    { _id: '1', name: 'Cotton Reactive Dyeing', description: 'Premium reactive dyeing for cotton fabrics with excellent color fastness.', category: 'Cotton', indicativePrice: 180, imageUrl: '/photos/textile-dyeing-services-500x500.png', unit: 'kg', materialType: 'Fabric', isActive: true },
+                    { _id: '2', name: 'Polyester HTHP Dyeing', description: 'High-temperature high-pressure dyeing for vibrant polyester shades.', category: 'Polyester', indicativePrice: 140, imageUrl: '/photos/slider11.png', unit: 'kg', materialType: 'Yarn', isActive: true },
+                    { _id: '3', name: 'Bio-Washing', description: 'Eco-friendly enzyme treatment for superior fabric softness.', category: 'Washing', indicativePrice: 40, imageUrl: '/photos/chattogram-bangladesh-december-012023-dyeing-600nw-2517335749.png', unit: 'kg', materialType: 'Fabric', isActive: true }
                 ]);
             } finally {
                 setLoading(false);
@@ -86,20 +86,8 @@ export const ServiceCatalog = () => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[1, 2, 3, 4, 5, 6].map(i => (
-                        <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col animate-pulse">
-                            <div className="h-48 bg-gray-200 w-full"></div>
-                            <div className="p-5 flex-1 space-y-3">
-                                <div className="flex justify-between">
-                                    <div className="h-4 bg-gray-200 rounded w-20"></div>
-                                    <div className="h-6 bg-gray-200 rounded w-16"></div>
-                                </div>
-                                <div className="h-6 bg-gray-200 rounded w-3/4"></div>
-                                <div className="space-y-2">
-                                    <div className="h-4 bg-gray-200 rounded w-full"></div>
-                                    <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-                                </div>
-                                <div className="h-10 bg-gray-200 rounded w-full mt-4"></div>
-                            </div>
+                        <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col animate-pulse h-96">
+                            <div className="h-full bg-gray-200 w-full"></div>
                         </div>
                     ))}
                 </div>
@@ -115,26 +103,42 @@ export const ServiceCatalog = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {services.map(service => (
-                    <div key={service._id} className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition flex flex-col">
-                        <div className="h-48 overflow-hidden">
-                            <img src={service.imageUrl} alt={service.name} className="w-full h-full object-cover transform hover:scale-105 transition duration-500" />
+                    <div key={service._id} className="group relative h-96 bg-gray-900 rounded-2xl shadow-lg overflow-hidden border border-gray-800 hover:shadow-2xl transition-all duration-300">
+                        {/* Background Image */}
+                        <div className="absolute inset-0">
+                            <img
+                                src={service.imageUrl}
+                                alt={service.name}
+                                className="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-700"
+                            />
+                            {/* Gradient Overlay */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90"></div>
                         </div>
-                        <div className="p-5 flex-1 flex flex-col">
-                            <div className="flex justify-between items-start mb-2">
-                                <div>
-                                    <span className="text-xs font-semibold text-primary-600 uppercase tracking-wide">{service.category}</span>
-                                    <h3 className="text-lg font-bold text-gray-900 mt-1">{service.name}</h3>
-                                </div>
-                                <span className="text-sm font-medium bg-gray-50 text-gray-600 px-2 py-1 rounded">₹{service.indicativePrice}/{service.unit}</span>
-                            </div>
-                            <p className="text-gray-500 text-sm mb-4 line-clamp-2 flex-1">{service.description}</p>
 
-                            <button
-                                onClick={() => openConfig(service)}
-                                className="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700"
-                            >
-                                <Plus className="h-4 w-4 mr-2" /> Configure & Add
-                            </button>
+                        {/* Content Overlay */}
+                        <div className="absolute inset-0 p-6 flex flex-col justify-end">
+                            <div className="transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                                <div className="flex justify-between items-end mb-2">
+                                    <span className="inline-block px-2 py-1 bg-primary-600/90 text-white text-xs font-bold uppercase rounded backdrop-blur-sm">
+                                        {service.category}
+                                    </span>
+                                    <span className="text-lg font-bold text-white bg-black/30 px-3 py-1 rounded-lg backdrop-blur-sm border border-white/10">
+                                        ₹{service.indicativePrice}<span className="text-sm font-normal text-gray-300">/{service.unit}</span>
+                                    </span>
+                                </div>
+
+                                <h3 className="text-2xl font-bold text-white mb-2 leading-tight">{service.name}</h3>
+                                <p className="text-gray-300 text-sm mb-6 line-clamp-2 leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-75 h-0 group-hover:h-auto overflow-hidden">
+                                    {service.description}
+                                </p>
+
+                                <button
+                                    onClick={() => openConfig(service)}
+                                    className="w-full inline-flex justify-center items-center px-4 py-3 border border-transparent text-sm font-bold rounded-xl text-white bg-primary-600 hover:bg-primary-500 shadow-lg hover:shadow-primary-600/30 transition-all duration-300 transform active:scale-95"
+                                >
+                                    <Plus className="h-5 w-5 mr-2" /> Configure & Add
+                                </button>
+                            </div>
                         </div>
                     </div>
                 ))}

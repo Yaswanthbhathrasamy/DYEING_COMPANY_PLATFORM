@@ -7,7 +7,7 @@ interface CartItem {
     indicativePrice: number;
     quantity: number;
     unit: string;
-    fabricType?: string; // Cotton, Polyester etc. specific type
+    fabricType?: string;
     colorDetails?: string;
     urgency?: string;
     notes: string;
@@ -18,18 +18,31 @@ interface CartContextType {
     addToCart: (item: CartItem) => void;
     removeFromCart: (itemId: string) => void;
     clearCart: () => void;
-    cartTotalConfig: number;
+    cartTotalConfig: number; // Item count
+    totalPrice: number;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
     const [items, setItems] = useState<CartItem[]>([]);
+    const [totalPrice, setTotalPrice] = useState(0);
 
     useEffect(() => {
         const saved = localStorage.getItem('cart');
-        if (saved) setItems(JSON.parse(saved));
+        if (saved) {
+            try {
+                setItems(JSON.parse(saved));
+            } catch (e) {
+                console.error("Failed to parse cart", e);
+            }
+        }
     }, []);
+
+    useEffect(() => {
+        const total = items.reduce((sum, item) => sum + (item.indicativePrice * item.quantity), 0);
+        setTotalPrice(total);
+    }, [items]);
 
     const saveCart = (newItems: CartItem[]) => {
         setItems(newItems);
@@ -53,7 +66,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     };
 
     return (
-        <CartContext.Provider value={{ items, addToCart, removeFromCart, clearCart, cartTotalConfig: items.length }}>
+        <CartContext.Provider value={{ items, addToCart, removeFromCart, clearCart, cartTotalConfig: items.length, totalPrice }}>
             {children}
         </CartContext.Provider>
     );

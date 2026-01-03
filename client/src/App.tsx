@@ -11,7 +11,7 @@ const Register = lazy(() => import('./pages/Register').then(module => ({ default
 
 const DashboardHome = lazy(() => import('./pages/dashboard/DashboardHome').then(module => ({ default: module.DashboardHome })));
 const ServiceCatalog = lazy(() => import('./pages/dashboard/ServiceCatalog').then(module => ({ default: module.ServiceCatalog })));
-const QuoteCart = lazy(() => import('./pages/dashboard/QuoteCart').then(module => ({ default: module.QuoteCart })));
+const QuoteCart = lazy(() => import('./pages/dashboard/Cart').then(module => ({ default: module.Cart }))); // Replaced with new Cart component
 const MyQuotes = lazy(() => import('./pages/dashboard/MyQuotes').then(module => ({ default: module.MyQuotes })));
 const MyOrders = lazy(() => import('./pages/dashboard/MyOrders').then(module => ({ default: module.MyOrders })));
 

@@ -13,9 +13,10 @@ interface TimelineEvent {
 
 interface Order {
     _id: string;
-    quote: {
+    quote?: {
         items: { service: { name: string } }[]
     };
+    items?: { service: { name: string } }[]; // Direct items
     status: string;
     timeline: TimelineEvent[];
     totalAmount?: number;
@@ -26,6 +27,9 @@ interface Order {
 
 const statusSteps = [
     { value: 'pending', label: 'Queued', icon: Clock },
+    { value: 'pending_approval', label: 'Review', icon: Clock }, // Added
+    { value: 'approved', label: 'Pay', icon: ClipboardCheck },   // Added
+    { value: 'paid', label: 'Paid', icon: CheckCircle },       // Added
     { value: 'dyeing', label: 'Dyeing', icon: Droplets },
     { value: 'washing', label: 'Washing', icon: Droplets }, // Reuse icon or find better
     { value: 'drying', label: 'Drying', icon: Sun },
@@ -62,6 +66,18 @@ export const MyOrders = () => {
         }
     }, [user?.id, socket]);
 
+    const handlePayNow = async (orderId: string) => {
+        try {
+            await axios.put(`http://localhost:5000/api/orders/${orderId}/pay`);
+            alert('Payment Successful! Bill Generated.');
+            // Optimistic update
+            setOrders(prev => prev.map(o => o._id === orderId ? { ...o, status: 'paid' } : o));
+        } catch (err) {
+            console.error(err);
+            alert('Payment Failed');
+        }
+    };
+
     return (
         <div className="space-y-6">
             <h1 className="text-2xl font-bold text-gray-900">Track Orders</h1>
@@ -71,7 +87,10 @@ export const MyOrders = () => {
                     <div className="flex justify-between items-center mb-6">
                         <div>
                             <h3 className="text-lg font-bold text-gray-900">Order #{order._id.slice(-6)}</h3>
-                            <p className="text-sm text-gray-500">{order.quote?.items[0]?.service?.name}</p>
+                            <p className="text-sm text-gray-500">
+                                {order.quote?.items[0]?.service?.name || order.items?.[0]?.service?.name || 'Unknown Service'}
+                                {(order.quote?.items.length || order.items?.length || 0) > 1 && ` + ${(order.quote?.items.length || order.items?.length || 0) - 1} more`}
+                            </p>
                         </div>
                         <div className="text-right">
                             {/* @ts-ignore */}
@@ -84,6 +103,14 @@ export const MyOrders = () => {
                             <span className="inline-block px-3 py-1 rounded-full text-sm font-semibold bg-gray-100 text-gray-800 capitalize">
                                 {order.status.replace('_', ' ')}
                             </span>
+                            {order.status === 'approved' && (
+                                <button
+                                    onClick={() => handlePayNow(order._id)}
+                                    className="ml-4 bg-green-600 text-white px-4 py-1 rounded-md text-sm font-bold shadow hover:bg-green-700"
+                                >
+                                    Pay Now
+                                </button>
+                            )}
                         </div>
                     </div>
 
